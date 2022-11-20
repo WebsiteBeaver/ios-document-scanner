@@ -137,7 +137,7 @@ public class DocScanner: NSObject, VNDocumentCameraViewControllerDelegate {
                         try scannedDocumentImage.write(to: croppedImageFilePath)
                         
                         // store image file path
-                        results.append(croppedImageFilePath.path)
+                        results.append(croppedImageFilePath.absoluteString)
                     } catch {
                         goBackToPreviousView(controller)
                         self.errorHandler("Unable to save scanned image: \(error.localizedDescription)")
