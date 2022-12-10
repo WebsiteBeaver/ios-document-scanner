@@ -22,6 +22,9 @@ public class DocScanner: NSObject, VNDocumentCameraViewControllerDelegate {
     
     /** @property  responseType determines the format response (base64 or file paths) */
     private var responseType: String
+
+    /** @property  croppedImageQuality the 0 - 100 quality of the cropped image */
+    private var croppedImageQuality: Int
     
     /**
      constructor for DocScanner
@@ -31,6 +34,7 @@ public class DocScanner: NSObject, VNDocumentCameraViewControllerDelegate {
      @param     errorHandler        a callback triggered when there's an error
      @param     cancelHandler       a callback triggered when the user cancels the document scan
      @param     responseType        determines the format response (base64 or file paths)
+     @param     croppedImageQuality the 0 - 100 quality of the cropped image
      
      @return    Returns a DocScanner
      */
@@ -39,13 +43,15 @@ public class DocScanner: NSObject, VNDocumentCameraViewControllerDelegate {
         successHandler: @escaping ([String]) -> Void = {_ in },
         errorHandler: @escaping (String) -> Void = {_ in },
         cancelHandler: @escaping () -> Void = {},
-        responseType: String = ResponseType.imageFilePath
+        responseType: String = ResponseType.imageFilePath,
+        croppedImageQuality: Int = 100
     ) {
         self.viewController = viewController
         self.successHandler = successHandler
         self.errorHandler = errorHandler
         self.cancelHandler = cancelHandler
         self.responseType = responseType
+        self.croppedImageQuality = croppedImageQuality
     }
     
     /**
@@ -83,19 +89,22 @@ public class DocScanner: NSObject, VNDocumentCameraViewControllerDelegate {
      @param     errorHandler        a callback triggered when there's an error
      @param     cancelHandler       a callback triggered when the user cancels the document scan
      @param     responseType        determines the format response (base64 or file paths)
+     @param     croppedImageQuality the 0 - 100 quality of the cropped image
      */
     public func startScan(
         _ viewController: UIViewController? = nil,
         successHandler: @escaping ([String]) -> Void = {_ in },
         errorHandler: @escaping (String) -> Void = {_ in },
         cancelHandler: @escaping () -> Void = {},
-        responseType: String? = ResponseType.imageFilePath
+        responseType: String? = ResponseType.imageFilePath,
+        croppedImageQuality: Int? = 100
     ) {
         self.viewController = viewController
         self.successHandler = successHandler
         self.errorHandler = errorHandler
         self.cancelHandler = cancelHandler
         self.responseType = responseType ?? ResponseType.imageFilePath
+        self.croppedImageQuality = croppedImageQuality
         
         self.startScan()
     }
@@ -119,7 +128,7 @@ public class DocScanner: NSObject, VNDocumentCameraViewControllerDelegate {
             // convert scan UIImage to jpeg data
             guard let scannedDocumentImage: Data = scan
                 .imageOfPage(at: pageNumber)
-                .jpegData(compressionQuality: 1) else {
+                .jpegData(compressionQuality: self.croppedImageQuality / 100) else {
                 goBackToPreviousView(controller)
                 self.errorHandler("Unable to get scanned document in jpeg format")
                 return
