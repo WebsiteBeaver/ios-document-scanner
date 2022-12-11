@@ -128,7 +128,7 @@ public class DocScanner: NSObject, VNDocumentCameraViewControllerDelegate {
             // convert scan UIImage to jpeg data
             guard let scannedDocumentImage: Data = scan
                 .imageOfPage(at: pageNumber)
-                .jpegData(compressionQuality: CGFloat(self.croppedImageQuality / 100)) else {
+                .jpegData(compressionQuality: CGFloat(self.croppedImageQuality) / CGFloat(100)) else {
                 goBackToPreviousView(controller)
                 self.errorHandler("Unable to get scanned document in jpeg format")
                 return
